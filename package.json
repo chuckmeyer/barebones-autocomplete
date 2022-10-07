@@ -1,0 +1,17 @@
+{
+  "name": "barebones-autocomplete",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Chuck Meyer",
+  "license": "MIT",
+  "dependencies": {
+    "@algolia/autocomplete-js": "^1.7.1",
+    "@algolia/autocomplete-theme-classic": "^1.7.1",
+    "algoliasearch": "^4.14.2",
+    "preact": "^10.11.1"
+  }
+}
