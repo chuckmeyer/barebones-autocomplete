@@ -2,11 +2,13 @@ const { autocomplete, getAlgoliaResults } = window['@algolia/autocomplete-js'];
 const appId = "latency";
 const apiKey = "6be0576ff61c053d5f9a3225e2a90f76";
 const searchClient = algoliasearch(appId, apiKey);
+const indexName = "instant_search";
 
-autocomplete({
+const { setIsOpen } = autocomplete({
   container: "#autocomplete",
   placeholder: "Search",
   debug: true,
+  detachedMediaQuery: "",
   openOnFocus: true,
   getSources({ query, state }) {
     if (!query) {
@@ -21,7 +23,7 @@ autocomplete({
             searchClient,
             queries: [
               {
-                indexName: "instant_search",
+                indexName: indexName,
                 query,
                 params: {
                   attributesToSnippet: ['name:10', 'description:35'],
@@ -45,14 +47,14 @@ autocomplete({
                   <a href="${item.url}"><img
                     src="${item.image}"
                     alt="${item.name}"
-                    width="40"
-                    height="40"
+                    width="80"
+                    height="80"
                   /></a>
                 </div>
                 <div class="aa-ItemContentBody">
                   <div class="aa-ItemContentTitle">
                     <a href="${item.url}">
-                      ${components.Highlight({
+                      ${components.Snippet({
                         hit: item,
                         attribute: 'name',
                       })}
@@ -80,3 +82,8 @@ autocomplete({
   }
 });
 
+document.addEventListener('keydown', (event) => {
+  if (event.metaKey && event.key.toLowerCase() === 'k') {
+    setIsOpen(true);
+  }
+});

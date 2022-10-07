@@ -1,0 +1,129 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-theme-classic"
+    />
+    <link rel="stylesheet" href="style.css" />
+
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-theme-classic"
+    />
+    <style>
+      :root {
+        --aa-icon-size: 80px;
+      }
+    </style>
+    <title>Playground | Autocomplete</title>
+  </head>
+
+  <body>
+    <div class="container">
+      <div id="autocomplete"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@algolia/autocomplete-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/preact/dist/preact.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/algoliasearch@4.5.1/dist/algoliasearch-lite.umd.js"
+        integrity="sha256-EXPXz4W6pQgfYY3yTpnDa3OH8/EPn16ciVsPQ/ypsjk="
+        crossorigin="anonymous"
+    ></script>
+    <script>
+      const { autocomplete, getAlgoliaResults } = window['@algolia/autocomplete-js'];
+      const appId = "FMXYI0LKWR";
+      const apiKey = "15d19a7c0b842b9f627aeb8da4262105";
+      const searchClient = algoliasearch(appId, apiKey);
+      const indexName = "webflow-blog";
+
+      const { setIsOpen } = autocomplete({
+          container: "#autocomplete",
+          placeholder: "Search",
+          detachedMediaQuery: '',
+          openOnFocus: true,
+          getSources({ query, state }) {
+            if (!query) {
+              return [];
+            }
+
+            return [
+              {
+                sourceId: "blogs",
+                getItems() {
+                  return getAlgoliaResults({
+                    searchClient,
+                    queries: [
+                      {
+                        indexName: indexName,
+                        query,
+                        params: {
+                          attributesToSnippet: ['name:10', 'summary:20'],
+                          snippetEllipsisText: '…',
+                          hitsPerPage: 5
+                        }
+                      }
+                    ]
+                  });
+                },
+                templates: {
+                  header() {
+                    return (
+                      "Posts"
+                    );
+                  },
+                  item({ item, components, html }) {
+                    return html`<div class="aa-ItemWrapper">
+                      <div class="aa-ItemContent">
+                        <div class="aa-ItemIcon aa-ItemIcon--alignTop">
+                          <a href="/posts/${item.slug}"><img
+                            src="${item.image}"
+                            alt="${item.name}"
+                            width="80"
+                            height="80"
+                          /></a>
+                        </div>
+                        <div class="aa-ItemContentBody">
+                          <div class="aa-ItemContentTitle">
+                            <a href="${item.url}">
+                              ${components.Snippet({
+                                hit: item,
+                                attribute: 'name',
+                              })}
+                            </a>
+                          </div>
+                          <div class="aa-ItemContentSubtitle">
+                              Published in <strong>${item.category}</strong>
+                          </div>
+                          <div class="aa-ItemContentDescription">
+                            ${components.Snippet({
+                              hit: item,
+                              attribute: 'summary',
+                            })}
+                          </div>
+                        </div>
+                      </div>
+                    </div>`;
+                  },
+                  noResults() {
+                    return "No posts for this query.";
+                  }
+                },
+                getItemUrl({ item }) {
+                  return "posts/${item.slug}";
+                },
+              }
+            ];
+          }
+        });        
+        document.addEventListener('keydown', (event) => {
+        if (event.metaKey && event.key.toLowerCase() === 'k') {
+          setIsOpen(true);
+        }
+      });
+    </script>
+  </body>
+</html>
